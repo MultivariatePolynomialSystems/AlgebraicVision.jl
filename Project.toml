@@ -1,0 +1,13 @@
+name = "AlgebraicVision"
+uuid = "b8daa09e-1485-4d93-80e1-e7d36e076067"
+authors = ["Viktor Korotynskiy <korotynskiy.viktor@gmail.com> and contributors"]
+version = "1.0.0-DEV"
+
+[compat]
+julia = "1.8"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
