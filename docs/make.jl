@@ -20,6 +20,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/azoviktor/AlgebraicVision.jl",
+    repo="github.com/MultivariatePolynomialSystems/AlgebraicVision.jl.git",
     devbranch="main",
 )
