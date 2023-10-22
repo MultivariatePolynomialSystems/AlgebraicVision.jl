@@ -6,11 +6,11 @@ DocMeta.setdocmeta!(AlgebraicVision, :DocTestSetup, :(using AlgebraicVision); re
 makedocs(;
     modules=[AlgebraicVision],
     authors="Viktor Korotynskiy <korotynskiy.viktor@gmail.com> and contributors",
-    repo="https://github.com/azoviktor/AlgebraicVision.jl/blob/{commit}{path}#{line}",
+    repo="https://multivariatepolynomialsystems.github.io/AlgebraicVision.jl/blob/{commit}{path}#{line}",
     sitename="AlgebraicVision.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://azoviktor.github.io/AlgebraicVision.jl",
+        canonical="https://multivariatepolynomialsystems.github.io/AlgebraicVision.jl",
         edit_link="main",
         assets=String[],
     ),
