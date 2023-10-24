@@ -4,7 +4,7 @@ CurrentModule = AlgebraicVision
 
 # AlgebraicVision
 
-Documentation for [AlgebraicVision](https://github.com/azoviktor/AlgebraicVision.jl).
+Documentation for [AlgebraicVision](https://github.com/MultivariatePolynomialSystems/AlgebraicVision.jl).
 
 ```@index
 ```

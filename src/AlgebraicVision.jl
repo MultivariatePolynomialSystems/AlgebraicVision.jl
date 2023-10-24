@@ -1,5 +1,13 @@
 module AlgebraicVision
 
-# Write your package code here.
+using HomotopyContinuation:
+    HomotopyContinuation,
+    @var,
+    System,
+    Variable,
+    Expression
+export @var, System, Variable, Expression
+
+include("vision_problem.jl")
 
 end
