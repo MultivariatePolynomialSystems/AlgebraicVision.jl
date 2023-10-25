@@ -1,4 +1,5 @@
-export vision_problem
+export VisionProblem,
+    vision_problem
 
 using LinearAlgebra: I, det
 
@@ -22,10 +23,10 @@ function abs_pose_eqs(nviews::Int, npoints::Int)
     return System(eqs; variables=vcat(R[:], t[:], α[:]), parameters=vcat(x[:], X[:]))
 end
 
-function rel_pose_eqs(nviews::Int, npoints::Int; fix_world::Bool=true)
+function rel_pose_eqs(nviews::Int, npoints::Int; fixed_world::Bool=true)
     nviews == 1 && throw(ArgumentError("Number of views for relative pose must be at least 2"))
     eqs = nothing
-    if fix_world
+    if fixed_world
         if nviews == 2
             @var R[1:3,1:3] t[1:3] α[1:npoints] β[1:npoints] x[1:3,1:npoints] y[1:3,1:npoints]
             eqs = vcat([β[i]*y[:,i] - [R t]*[α[i]*x[:,i]; 1] for i in 1:npoints]...)
@@ -47,14 +48,32 @@ function rel_pose_eqs(nviews::Int, npoints::Int; fix_world::Bool=true)
     end
 end
 
-function vision_problem(; nviews::Int, npoints::Int, pose::Symbol=:rel, fix_world::Bool=true)
+struct VisionProblem
+    nviews::Int
+    npoints::Int
+    pose::Symbol
+    fixed_world::Bool
+    eqs::System
+end
+
+function VisionProblem(nviews::Int, npoints::Int, pose::Symbol, fixed_world::Bool)
     nviews <= 0 && throw(ArgumentError("Number of views must be positive"))
     npoints <= 0 && throw(ArgumentError("Number of points must be positive"))
+    # F = nothing
     if pose == :rel
-        return rel_pose_eqs(nviews, npoints, fix_world=fix_world)
+        F = rel_pose_eqs(nviews, npoints, fixed_world=fixed_world)
     elseif pose == :abs
-        return abs_pose_eqs(nviews, npoints)
+        F = abs_pose_eqs(nviews, npoints)
     else
         throw(ArgumentError("Unknown pose"))
     end
+    return VisionProblem(nviews, npoints, pose, fixed_world, F)
+end
+
+function VisionProblem(; nviews::Int, npoints::Int, pose::Symbol, fixed_world::Bool=true)
+    return VisionProblem(nviews, npoints, pose, fixed_world)
+end
+
+function fabricateSample(vp::VisionProblem)
+
 end
