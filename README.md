@@ -44,3 +44,8 @@ System of length 104
  104 parameters: l₁₋₁₋₁, l₂₋₁₋₁, l₁₋₂₋₁, l₂₋₂₋₁, l₁₋₃₋₁, l₂₋₃₋₁, l₁₋₄₋₁, l₂₋₄₋₁, l₁₋₅₋₁, l₂₋₅₋₁, l₁₋₆₋₁, l₂₋₆₋₁, l₁₋₇₋₁, l₂₋₇₋₁, l₁₋₈₋₁, l₂₋₈₋₁, l₁₋₉₋₁, l₂₋₉₋₁, l₁₋₁₀₋₁, l₂₋₁₀₋₁, l₁₋₁₁₋₁, l₂₋₁₁₋₁, l₁₋₁₂₋₁, l₂₋₁₂₋₁, l₁₋₁₃₋₁, l₂₋₁₃₋₁, l₁₋₁₋₂, l₂₋₁₋₂, l₁₋₂₋₂, l₂₋₂₋₂, l₁₋₃₋₂, l₂₋₃₋₂, l₁₋₄₋₂, l₂₋₄₋₂, l₁₋₅₋₂, l₂₋₅₋₂, l₁₋₆₋₂, l₂₋₆₋₂, l₁₋₇₋₂, l₂₋₇₋₂, l₁₋₈₋₂, l₂₋₈₋₂, l₁₋₉₋₂, l₂₋₉₋₂, l₁₋₁₀₋₂, l₂₋₁₀₋₂, l₁₋₁₁₋₂, l₂₋₁₁₋₂, l₁₋₁₂₋₂, l₂₋₁₂₋₂, l₁₋₁₃₋₂, l₂₋₁₃₋₂, l₁₋₁₋₃, l₂₋₁₋₃, l₁₋₂₋₃, l₂₋₂₋₃, l₁₋₃₋₃, l₂₋₃₋₃, l₁₋₄₋₃, l₂₋₄₋₃, l₁₋₅₋₃, l₂₋₅₋₃, l₁₋₆₋₃, l₂₋₆₋₃, l₁₋₇₋₃, l₂₋₇₋₃, l₁₋₈₋₃, l₂₋₈₋₃, l₁₋₉₋₃, l₂₋₉₋₃, l₁₋₁₀₋₃, l₂₋₁₀₋₃, l₁₋₁₁₋₃, l₂₋₁₁₋₃, l₁₋₁₂₋₃, l₂₋₁₂₋₃, l₁₋₁₃₋₃, l₂₋₁₃₋₃, l₁₋₁₋₄, l₂₋₁₋₄, l₁₋₂₋₄, l₂₋₂₋₄, l₁₋₃₋₄, l₂₋₃₋₄, l₁₋₄₋₄, l₂₋₄₋₄, l₁₋₅₋₄, l₂₋₅₋₄, l₁₋₆₋₄, l₂₋₆₋₄, l₁₋₇₋₄, l₂₋₇₋₄, l₁₋₈₋₄, l₂₋₈₋₄, l₁₋₉₋₄, l₂₋₉₋₄, l₁₋₁₀₋₄, l₂₋₁₀₋₄, l₁₋₁₁₋₄, l₂₋₁₁₋₄, l₁₋₁₂₋₄, l₂₋₁₂₋₄, l₁₋₁₃₋₄, l₂₋₁₃₋₄
 ```
 As we can see, it containts the rotation cayley coordinates `cᵢ₋ⱼ`, translation coordinates `tᵢ₋ⱼ`, depths `αᵢ₋ⱼ` of 3D points, the 3D points' coordinates `Xᵢ₋ⱼ`, and finally the coordinates of the projections of 3D points into the cameras `xᵢ₋ⱼ₋ₖ`.
+
+### Elimination of variables
+TBA...
+### Decomposition
+TBA...
