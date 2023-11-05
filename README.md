@@ -1,4 +1,4 @@
-# AlgebraicVision
+# AlgebraicVision.jl
 
 <!--[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://multivariatepolynomialsystems.github.io/AlgebraicVision.jl/stable/)-->
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://multivariatepolynomialsystems.github.io/AlgebraicVision.jl/dev/)
@@ -21,6 +21,7 @@ radial_4v = VisionProblem(
     cameras = CamerasSetup(
         ncameras = 4,
         camera_types = :radial,
+        calibration = :calibrated
     ),
     scene = SceneSetup(
         npoints = 13,
