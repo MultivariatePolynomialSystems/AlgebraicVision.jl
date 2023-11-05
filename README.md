@@ -45,6 +45,8 @@ System of length 104
 ```
 As we can see, it containts the rotation cayley coordinates `cᵢ₋ⱼ`, translation coordinates `tᵢ₋ⱼ`, depths `αᵢ₋ⱼ` of 3D points, the 3D points' coordinates `Xᵢ₋ⱼ`, and finally the coordinates of the projections of 3D points into the cameras `xᵢ₋ⱼ₋ₖ`.
 
+### Fixing the world
+TBA...
 ### Elimination of variables
 TBA...
 ### Decomposition
