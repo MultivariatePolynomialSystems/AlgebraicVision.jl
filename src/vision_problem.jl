@@ -1,79 +1,134 @@
 export VisionProblem,
-    vision_problem
+    CamerasSetup,
+    SceneSetup,
+    Formulation
 
 using LinearAlgebra: I, det
 
-rotation_constraints(R::Matrix{Variable}) = vcat((R'*R-I)[:], det(R)-1)
+# subs(VP, x[:,1] => [0,0,0], t[:,1] => [0,0], t[:,2] => [0,1])
+
+const CAMERA_TYPES = [:perspective, :radial]
+const CAMERA_POSES = [:rel, :abs]
+const ROTATION_PARAMETRIZATIONS = [:explicit, :cayley, :quaternion]
+
+@kwdef struct CamerasSetup
+    ncameras::Int
+    camera_types::Union{Symbol, Vector{Symbol}}=:perspective
+    calibration::Symbol=:calibrated
+end
+
+@kwdef struct Formulation
+    pose::Symbol=:rel
+    rotations::Union{Symbol, Vector{Symbol}}=:explicit
+end
+
+abstract type PointLineIncidence end
+
+@kwdef struct SceneSetup
+    npoints::Int
+    nlines::Int=0
+    incidences::Vector{PointLineIncidence}=[]
+end
+
+function rotation_constraints(R::Matrix{Variable})
+    if size(R, 1) == 3
+        return vcat((R*R'-I)[:], det(R)-1)
+    else
+        return (R*R'-I)[:]
+    end
+end
 
 function rotation_constraints(R::Array{Variable, 3})
     return vcat([rotation_constraints(R[:,:,i]) for i in axes(R,3)]...)
 end
 
-function abs_pose_eqs(nviews::Int, npoints::Int)
-    eqs = nothing
-    if nviews == 1
-        @var R[1:3,1:3] t[1:3] α[1:npoints] x[1:3,1:npoints] X[1:3,1:npoints]
-        eqs = vcat([α[i]*x[:,i] - [R t]*[X[:,i]; 1] for i in 1:npoints]...)
-    else
-        @var R[1:3,1:3,1:nviews] t[1:3,1:nviews] α[1:npoints,1:nviews]
-        @var x[1:3,1:npoints,1:nviews] X[1:3,1:npoints]
-        eqs = vcat([α[i,j]*x[:,i,j] - [R[:,:,j] t[:,j]]*[X[:,i]; 1] for i in 1:npoints for j in 1:nviews]...)
+function equations(cameras::CamerasSetup, scene::SceneSetup, formulation::Formulation)
+    @unpack ncameras, camera_types = cameras
+    @unpack npoints, nlines, incidences = scene
+    @unpack rotations, pose = formulation
+    @var t[1:3,1:ncameras] α[1:npoints,1:ncameras] X[1:3,1:npoints]
+    if rotations == :explicit
+        @var R[1:3,1:3,1:ncameras]
+        P = [[R[:,:,i] t[:,i]] for i in 1:ncameras]
+    elseif rotations == :cayley
+        @var c[1:3,1:ncameras]
+        P = [ct2sP(c[:,i], t[:,i]) for i in 1:ncameras]
     end
-    append!(eqs, rotation_constraints(R))
-    return System(eqs; variables=vcat(R[:], t[:], α[:]), parameters=vcat(x[:], X[:]))
-end
-
-function rel_pose_eqs(nviews::Int, npoints::Int; fixed_world::Bool=true)
-    nviews == 1 && throw(ArgumentError("Number of views for relative pose must be at least 2"))
-    eqs = nothing
-    if fixed_world
-        if nviews == 2
-            @var R[1:3,1:3] t[1:3] α[1:npoints] β[1:npoints] x[1:3,1:npoints] y[1:3,1:npoints]
-            eqs = vcat([β[i]*y[:,i] - [R t]*[α[i]*x[:,i]; 1] for i in 1:npoints]...)
-            append!(eqs, rotation_constraints(R))
-            return System(eqs; variables=vcat(R[:], t, α, β), parameters=vcat(x[:], y[:]))
-        else
-            @var R[1:3,1:3,2:nviews] t[1:3,2:nviews]
-            @var α[1:npoints,1:nviews] x[1:3,1:npoints,1:nviews]
-            eqs = vcat([α[i,j]*x[:,i,j] - [R[:,:,j-1] t[:,j-1]]*[α[i,1]*x[:,i,1]; 1] for i in 1:npoints for j in 2:nviews]...)
-            append!(eqs, rotation_constraints(R))
-            return System(eqs; variables=vcat(R[:], t[:], α[:]), parameters=x[:])
+    if camera_types == :perspective
+        @var x[1:3,1:npoints,1:ncameras]
+    elseif camera_types == :radial
+        if rotations == :explicit
+            R = R[1:2,:,:]
         end
-    else
-        @var R[1:3,1:3,1:nviews] t[1:3,1:nviews] X[1:3,1:npoints]
-        @var α[1:npoints,1:nviews] x[1:3,1:npoints,1:nviews]
-        eqs = vcat([α[i,j]*x[:,i,j] - [R[:,:,j] t[:,j]]*[X[:,i]; 1] for i in 1:npoints for j in 1:nviews]...)
+        t = t[1:2,:]
+        P = [P[i][1:2,:] for i in 1:ncameras]
+        @var l[1:2,1:npoints,1:ncameras]
+        x = l
+    end
+    eqs = vcat([α[i,j]*x[:,i,j] - P[j]*[X[:,i]; 1] for i in 1:npoints for j in 1:ncameras]...)
+    if rotations == :explicit
         append!(eqs, rotation_constraints(R))
-        return System(eqs; variables=vcat(R[:], t[:], α[:], X[:]), parameters=x[:])
+        if pose == :abs
+            return System(eqs; variables=vcat(R[:], t[:], α[:]), parameters=vcat(x[:], X[:]))
+        elseif pose == :rel
+            return System(eqs; variables=vcat(R[:], t[:], α[:], X[:]), parameters=x[:])
+        end
+    elseif rotations == :cayley
+        if pose == :abs
+            return System(eqs; variables=vcat(c[:], t[:], α[:]), parameters=vcat(x[:], X[:]))
+        elseif pose == :rel
+            return System(eqs; variables=vcat(c[:], t[:], α[:], X[:]), parameters=x[:])
+        end
     end
 end
 
 struct VisionProblem
-    nviews::Int
-    npoints::Int
-    pose::Symbol
-    fixed_world::Bool
-    eqs::System
+    cameras::CamerasSetup
+    scene::SceneSetup
+    formulation::Formulation
+    equations::System
 end
 
-function VisionProblem(nviews::Int, npoints::Int, pose::Symbol, fixed_world::Bool)
-    nviews <= 0 && throw(ArgumentError("Number of views must be positive"))
-    npoints <= 0 && throw(ArgumentError("Number of points must be positive"))
-    # F = nothing
-    if pose == :rel
-        F = rel_pose_eqs(nviews, npoints, fixed_world=fixed_world)
-    elseif pose == :abs
-        F = abs_pose_eqs(nviews, npoints)
-    else
-        throw(ArgumentError("Unknown pose"))
+function check_args(cameras::CamerasSetup)
+    @unpack ncameras, camera_types = cameras
+    ncameras <= 0 && throw(ArgumentError("Number of cameras must be positive"))
+    if !(camera_types in CAMERA_TYPES)
+        throw(ArgumentError("Unknown camera type"))
     end
-    return VisionProblem(nviews, npoints, pose, fixed_world, F)
 end
 
-function VisionProblem(; nviews::Int, npoints::Int, pose::Symbol, fixed_world::Bool=true)
-    return VisionProblem(nviews, npoints, pose, fixed_world)
+function check_args(scene::SceneSetup)
+    @unpack npoints, nlines, incidences = scene
+    npoints+nlines <= 0 && throw(ArgumentError("Total number of points and lines must be positive"))
+    # TODO: check incidences
+end
+
+function check_args(formulation::Formulation)
+    @unpack rotations, pose = formulation
+    if !(rotations in ROTATION_PARAMETRIZATIONS)
+        throw(ArgumentError("Unknown rotation parametrization"))
+    end
+    if !(pose in CAMERA_POSES)
+        throw(ArgumentError("Unknown camera pose"))
+    end
+end
+
+function VisionProblem(;
+    cameras::CamerasSetup,
+    scene::SceneSetup,
+    formulation::Formulation=Formulation()
+)
+    check_args(cameras)
+    check_args(scene)
+    check_args(formulation)
+    eqs = equations(cameras, scene, formulation)
+    return VisionProblem(cameras, scene, formulation, eqs)
 end
 
 function fabricateSample(vp::VisionProblem)
+
+end
+
+function HC.subs(vp::VisionProblem, substitutions::Pair...)
 
 end

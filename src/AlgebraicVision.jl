@@ -1,13 +1,12 @@
 module AlgebraicVision
 
-using HomotopyContinuation:
-    HomotopyContinuation,
-    @var,
-    System,
-    Variable,
-    Expression
-export @var, System, Variable, Expression
+using UnPack: @unpack
+import HomotopyContinuation
+const HC = HomotopyContinuation
+using HomotopyContinuation.ModelKit
+export @var, Variable, Expression, System
 
+include("utils.jl")
 include("vision_problem.jl")
 
 end
