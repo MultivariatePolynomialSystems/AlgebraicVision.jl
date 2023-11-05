@@ -2,7 +2,7 @@
 
 <!--[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://multivariatepolynomialsystems.github.io/AlgebraicVision.jl/stable/)-->
 
-[![License](https://img.shields.io/badge/License-MIT-yellow?style=plastic&label=License&color=%23B22222%09)](https://github.com/MultivariatePolynomialSystems/AlgebraicVision.jl/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=flat&label=License&color=%23B22222%09)](https://github.com/MultivariatePolynomialSystems/AlgebraicVision.jl/blob/main/LICENSE)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://multivariatepolynomialsystems.github.io/AlgebraicVision.jl/dev/)
 
 AlgebraicVision.jl is a Julia package that generates an algebraic problem in geometric computer vision as a polynomial system depending on the setup of cameras that observe the scene and the scene itself.
