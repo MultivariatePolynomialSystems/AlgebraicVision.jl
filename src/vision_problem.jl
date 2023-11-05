@@ -45,7 +45,7 @@ end
 function equations(cameras::CamerasSetup, scene::SceneSetup, formulation::Formulation)
     @unpack ncameras, camera_types = cameras
     @unpack npoints, nlines, incidences = scene
-    @unpack rotations, pose = formulation
+    @unpack pose, rotations = formulation
     @var t[1:3,1:ncameras] α[1:npoints,1:ncameras] X[1:3,1:npoints]
     if rotations == :explicit
         @var R[1:3,1:3,1:ncameras]
@@ -104,12 +104,12 @@ function check_args(scene::SceneSetup)
 end
 
 function check_args(formulation::Formulation)
-    @unpack rotations, pose = formulation
-    if !(rotations in ROTATION_PARAMETRIZATIONS)
-        throw(ArgumentError("Unknown rotation parametrization"))
-    end
+    @unpack pose, rotations = formulation
     if !(pose in CAMERA_POSES)
         throw(ArgumentError("Unknown camera pose"))
+    end
+    if !(rotations in ROTATION_PARAMETRIZATIONS)
+        throw(ArgumentError("Unknown rotation parametrization"))
     end
 end
 
